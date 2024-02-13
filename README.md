@@ -1,4 +1,4 @@
-# Pre-compute contract deployment address using CREATE2
+# Wallet & Factory contract deployment address using CREATE2
 The following Solidity source code and usage script ilustrates how to pre-calculate the deployment address of a contract,  on the EVM blockchain before deploying it.
 
 # Required software
