@@ -6,8 +6,9 @@ contract PreComputeAddress{
     event Deployed(address indexed preComputedAddress);
 
     // we need bytecode of the contract to be deployed along with the constructor parameters
-    function getBytecode() public pure returns (bytes memory){
-        return type(MyWallet).creationCode;
+    function getBytecode(address payable _owner) public pure returns (bytes memory){
+        bytes memory bytecode =type(MyWallet).creationCode;
+        return abi.encodePacked(bytecode,abi.encode(_owner));
     }
 
     //compute the deployment address
@@ -36,17 +37,12 @@ contract PreComputeAddress{
 //A basic wallet contract owned by a hardcoded address, that allows the owner to retrieve funds sent to the contract´s address before contract creation
 contract MyWallet{
 
-    uint public balance;
     //replace with the prefered address
-    address constant public myAddress = 0x67fd15A39319598A868C42415237ee883d811653;
+    //address constant public myAddress = 0x67fd15A39319598A868C42415237ee883d811653;
     address owner;
 
-    constructor () {
-        owner= myAddress;
-    }
-
-    function deposit () external payable {
-        balance += msg.value;
+    constructor (address payable _owner) {
+        owner= _owner;
     }
 
     function getBalance () public view returns (uint) {
@@ -57,20 +53,9 @@ contract MyWallet{
     function widthdrawMoney (address payable recipient) external {
         require (msg.sender==owner);
         recipient.transfer (address(this).balance);
-    } 
-
-    function transferMoney (address payable recipient, uint amount) external {
-        require(amount <= balance, "Not Enough Funds, aborting");
-        balance-=amount;
-        recipient.transfer (amount);
-    } 
+    }  
 
     receive () external payable {
-        balance += msg.value;
         }
-
-    fallback () external payable {
-        balance += msg.value;
-    }
 
 }
